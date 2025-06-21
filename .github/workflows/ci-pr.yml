@@ -1,0 +1,16 @@
+name: CI Reuse PR
+on:
+  workflow_call:
+    inputs:
+      appType:
+        required: true
+        type: string
+jobs:
+  Build:
+    uses: golive123/roboshop-github-actions/.github/workflows/ci-build.yml@main
+    with:
+      appType: '${{ inputs.appType }}'
+
+
+
+

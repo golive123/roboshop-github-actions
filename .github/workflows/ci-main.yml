@@ -1,0 +1,68 @@
+name: CI Reuse Main
+
+on:
+  workflow_call:
+    inputs:
+      appType:
+        required: true
+        type: string
+      appName:
+        required: true
+        type: string
+    secrets:
+      azuresecrets:
+        required: true
+
+jobs:
+  Build:
+    uses: golive123/roboshop-github-actions/.github/workflows/ci-build.yml@main
+    with:
+      appType: '${{ inputs.appType }}'
+      appName: '${{ inputs.appName }}'
+      docker_build: "false"
+    secrets:
+      azuresecrets: ${{ secrets.azuresecrets }}
+
+  Test:
+    needs: Build
+    uses: udayach123/roboshop-github-actions/.github/workflows/ci-test.yml@main
+    with:
+      appType: ${{ inputs.appType }}
+
+  Docker_build:
+    needs: Test
+    uses: udayach123/roboshop-github-actions/.github/workflows/ci-build.yml@main
+    with:
+      appType: '${{ inputs.appType }}'
+      appName: '${{ inputs.appName }}'
+      docker_build: "true"
+    secrets:
+      azuresecrets: ${{ secrets.azuresecrets }}
+
+  Dev_deploy:
+    environment: Dev
+    runs-on: ubuntu-latest
+    needs: Docker_build
+    steps:
+      - run: echo "Deploying to Dev"
+
+  Qa_Deploy:
+    environment: QA
+    runs-on: ubuntu-latest
+    needs: Dev_deploy
+    steps:
+      - run: echo "Deploying to QA"
+
+  Uat_Deploy:
+    environment: UAT
+    runs-on: ubuntu-latest
+    needs: Qa_Deploy
+    steps:
+      - run: echo "Deploying to UAT"
+
+  Prod_Deploy:
+    environment: PROD
+    runs-on: ubuntu-latest
+    needs: Uat_Deploy
+    steps:
+      - run: echo "Deploying to PROD"

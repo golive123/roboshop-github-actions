@@ -1,0 +1,57 @@
+name: CI Reuse Build
+
+on:
+  workflow_call:
+    inputs:
+      appType:
+        required: true
+        type: string
+      appName:
+        required: true
+        type: string
+      docker_build:
+        required: true
+        type: string
+    secrets:
+      azuresecrets:
+        required: true
+
+jobs:
+  Build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download NodeJS Dependencies
+        if: inputs.appType == 'nodejs'
+        run: npm install
+
+      - name: Download Maven Dependencies
+        if: inputs.appType == 'maven'
+        run: mvn package
+
+      - name: Import Secrets
+        if: inputs.docker_build == 'true'
+        id: import-secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: http://vault.yourtherapist.in:8200/
+          token: ${{ secrets.azuresecrets }}
+          secrets: |
+            kv/data/azuresecrets ARM_CLIENT_ID | ARM_CLIENT_ID ;
+            kv/data/azuresecrets ARM_CLIENT_SECRET | ARM_CLIENT_SECRET ;
+            kv/data/azuresecrets ARM_TENANT_ID | ARM_TENANT_ID ;
+            kv/data/azuresecrets ARM_SUBSCRIPTION_ID | ARM_SUBSCRIPTION_ID ;
+
+      - name: Docker Build and Push
+        if: inputs.docker_build == 'true'
+        env:
+          ARM_CLIENT_ID: ${{ steps.import-secrets.outputs.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ steps.import-secrets.outputs.ARM_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ steps.import-secrets.outputs.ARM_TENANT_ID }}
+        run: |
+          az login --service-principal --username "$ARM_CLIENT_ID" --password "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
+          az acr login --name golive
+          docker build -t golive.azurecr.io/roboshop-${{ inputs.appName }}:${{ github.sha }} .
+          docker push golive.azurecr.io/roboshop-${{ inputs.appName }}:${{ github.sha }}

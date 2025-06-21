@@ -25,13 +25,13 @@ jobs:
 
   Test:
     needs: Build
-    uses: udayach123/roboshop-github-actions/.github/workflows/ci-test.yml@main
+    uses: golive123/roboshop-github-actions/.github/workflows/ci-test.yml@main
     with:
       appType: ${{ inputs.appType }}
 
   Docker_build:
     needs: Test
-    uses: udayach123/roboshop-github-actions/.github/workflows/ci-build.yml@main
+    uses: golive123/roboshop-github-actions/.github/workflows/ci-build.yml@main
     with:
       appType: '${{ inputs.appType }}'
       appName: '${{ inputs.appName }}'

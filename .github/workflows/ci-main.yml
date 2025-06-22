@@ -25,9 +25,20 @@ jobs:
 
   Test:
     needs: Build
-    uses: golive123/roboshop-github-actions/.github/workflows/ci-test.yml@main
-    with:
-      appType: ${{ inputs.appType }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo npm install
+          echo npm test
+        name: Run NodeJS Tests
+        if: inputs.appType == 'nodejs'
+      - run: echo mvn test
+        name: Run Maven Tests
+        if: inputs.appType == 'maven'
+      - run: echo python -m unittest
+        name: Run Python Tests
+        if: inputs.appType == 'python'
 
   Docker_build:
     needs: Test

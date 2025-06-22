@@ -1,5 +1,4 @@
-name: CI Reuse Build
-
+name: CI ReUse Dev
 on:
   workflow_call:
     inputs:
@@ -13,24 +12,19 @@ on:
         required: true
         type: string
     secrets:
-      azuresecrets:
+      vault_token:
         required: true
-
 jobs:
   Build:
     runs-on: self-hosted
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Download NodeJS Dependencies
+      - uses: actions/checkout@v4
+      - run: npm install
+        name: Download NodeJS Dependencies
         if: inputs.appType == 'nodejs'
-        run: npm install
-
-      - name: Download Maven Dependencies
+      - run: mvn package
+        name: Download Maven Dependencies
         if: inputs.appType == 'maven'
-        run: mvn package
-
       - name: Import Secrets
         if: inputs.docker_build == 'true'
         id: import-secrets
@@ -42,14 +36,9 @@ jobs:
             kv/data/azuresecrets ARM_CLIENT_ID | ARM_CLIENT_ID ;
             kv/data/azuresecrets ARM_CLIENT_SECRET | ARM_CLIENT_SECRET ;
             kv/data/azuresecrets ARM_TENANT_ID | ARM_TENANT_ID ;
-            kv/data/azuresecrets ARM_SUBSCRIPTION_ID | ARM_SUBSCRIPTION_ID ;
-
-      - name: Docker Build and Push
+            kv/data/azuresecrets ARM_SUBSCRIPTION_ID | ARM_SUBSCRIPTION_ID
+      - name: Docker Build
         if: inputs.docker_build == 'true'
-        env:
-          ARM_CLIENT_ID: ${{ steps.import-secrets.outputs.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ steps.import-secrets.outputs.ARM_CLIENT_SECRET }}
-          ARM_TENANT_ID: ${{ steps.import-secrets.outputs.ARM_TENANT_ID }}
         run: |
           az login --service-principal --username "$ARM_CLIENT_ID" --password "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
           az acr login --name golive

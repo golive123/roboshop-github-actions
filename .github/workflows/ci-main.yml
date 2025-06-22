@@ -21,7 +21,7 @@ jobs:
       appName: '${{ inputs.appName }}'
       docker_build: "false"
     secrets:
-      azuresecrets: ${{ secrets.azuresecrets }}
+      azuresecrets: ${{ secrets.AZURESECRETS }}
 
   Test:
     needs: Build
@@ -48,7 +48,7 @@ jobs:
       appName: '${{ inputs.appName }}'
       docker_build: "true"
     secrets:
-      azuresecrets: ${{ secrets.azuresecrets }}
+      azuresecrets: ${{ secrets.AZURESECRETS }}
 
   Dev_deploy:
     environment: Dev

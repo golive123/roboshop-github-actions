@@ -31,6 +31,7 @@ jobs:
         uses: hashicorp/vault-action@v2
         with:
           url: http://vault.yourtherapist.in:8200/
+          method: token
           token: ${{ secrets.azuresecrets }}
           secrets: |
             kv/data/azuresecrets ARM_CLIENT_ID | ARM_CLIENT_ID ;

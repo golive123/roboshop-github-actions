@@ -56,7 +56,7 @@ jobs:
     uses: golive123/roboshop-github-actions/.github/workflows/aks-deploy.yml@main
     with:
       appEnv: 'dev'
-      resourceGroup: 'ukwest-dev'
+      resourceGroup: 'golive'
       appName: '${{ inputs.appName }}'
     secrets:
       azuresecrets: ${{ secrets.azuresecrets }}

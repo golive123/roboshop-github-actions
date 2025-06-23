@@ -19,12 +19,12 @@ jobs:
   Deploy:
     runs-on: self-hosted
     steps:
-#      - uses: actions/checkout@v4
-#      - name: Checkout Helm repo
-#        uses: actions/checkout@v4
-#        with:
-#          repository: raghudevopsb84/roboshop-helm
-#          path: helm
+      - uses: actions/checkout@v4
+      - name: Checkout Helm repo
+        uses: actions/checkout@v4
+        with:
+          repository: golive123/roboshop-helm
+          path: helm
       - name: Import Secrets
         id: import-secrets
         uses: hashicorp/vault-action@v2
@@ -39,7 +39,7 @@ jobs:
             kv/data/azuresecrets ARM_SUBSCRIPTION_ID | ARM_SUBSCRIPTION_ID
       - name: Deploy
         run: |
-#          cd helm
+          cd helm
           az login --service-principal --username "${ARM_CLIENT_ID}" --password "${ARM_CLIENT_SECRET}" --tenant "${ARM_TENANT_ID}"
           az aks get-credentials --name main-${{ inputs.appEnv }} --resource-group ${{ inputs.resourceGroup }} --overwrite-existing
-#          helm upgrade -i ${{ inputs.appName }} . -f env-${{ inputs.appEnv }}/${{ inputs.appName }}.yaml -n app --create-namespace --set appTag=${{ github.sha }}
+          helm upgrade -i ${{ inputs.appName }} . -f env-${{ inputs.appEnv }}/${{ inputs.appName }}.yaml -n app --create-namespace --set appTag=${{ github.sha }}

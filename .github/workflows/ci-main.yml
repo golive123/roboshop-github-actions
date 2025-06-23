@@ -51,7 +51,7 @@ jobs:
       azuresecrets: ${{ secrets.AZURESECRETS }}
 
   Dev_deploy:
-    needs: DockerBuild
+    needs: Docker_build
     #environment: DEV
     uses: golive123/roboshop-github-actions/.github/workflows/aks-deploy.yml@main
     with:

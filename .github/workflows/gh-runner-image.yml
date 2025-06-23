@@ -15,5 +15,5 @@ jobs:
         run: |
           cd runner-docker-image
           docker build -t udaych123/github-runner .
-          docker login -u udaych123 -p ${{ secrets.DOCKER_SECRET }}
+          docker login -u udaych123 -p ${{ secrets.DOCKERSECRET }}
           docker push udaych123/github-runner

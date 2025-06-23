@@ -51,11 +51,15 @@ jobs:
       azuresecrets: ${{ secrets.AZURESECRETS }}
 
   Dev_deploy:
-    environment: Dev
-    runs-on: ubuntu-latest
-    needs: Docker_build
-    steps:
-      - run: echo "Deploying to Dev"
+    needs: DockerBuild
+    #environment: DEV
+    uses: golive123/roboshop-github-actions/.github/workflows/aks-deploy.yml@main
+    with:
+      appEnv: 'dev'
+      resourceGroup: 'ukwest-dev'
+      appName: '${{ inputs.appName }}'
+    secrets:
+      azuresecrets: ${{ secrets.azuresecrets }}
 
   Qa_Deploy:
     environment: QA

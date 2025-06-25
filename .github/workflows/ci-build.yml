@@ -45,4 +45,3 @@ jobs:
           az acr login --name golive
           docker build -t golive.azurecr.io/roboshop-${{ inputs.appName }}:${{ github.sha }} .
           docker push golive.azurecr.io/roboshop-${{ inputs.appName }}:${{ github.sha }}
-#3

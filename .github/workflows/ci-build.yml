@@ -37,7 +37,7 @@ jobs:
             kv/data/azuresecrets ARM_CLIENT_ID | ARM_CLIENT_ID ;
             kv/data/azuresecrets ARM_CLIENT_SECRET | ARM_CLIENT_SECRET ;
             kv/data/azuresecrets ARM_TENANT_ID | ARM_TENANT_ID ;
-            kv/data/azuresecrets ARM_SUBSCRIPTION_ID | ARM_SUBSCRIPTION_ID
+            kv/data/azuresecrets ARM_SUBSCRIPTION_ID | ARM_SUBSCRIPTION_ID ;
       - name: Docker Build
         if: inputs.docker_build == 'true'
         run: |
